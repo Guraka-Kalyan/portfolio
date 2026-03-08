@@ -6,6 +6,33 @@ import { useGSAP } from "../lib/gsap-react";
 
 gsap.registerPlugin(ScrollTrigger);
 
+const projects = [
+  {
+    id: "01",
+    name: "VM Lead Management",
+    category: "Full Stack / CRM",
+    tools: "React.js, Node.js, Express.js, MongoDB",
+    link: "https://lm-1.venturemond.in/",
+    image: "/images/leadmanagement.png",
+  },
+  {
+    id: "02",
+    name: "VentureMond Website",
+    category: "Full Stack / Business",
+    tools: "React.js, Node.js, MongoDB Atlas, Nodemailer",
+    link: "https://venturemond.com/",
+    image: "/images/venturemond.png",
+  },
+  {
+    id: "03",
+    name: "Stacli Website",
+    category: "Full Stack / Company",
+    tools: "React.js, Node.js, MongoDB Atlas, Nodemailer",
+    link: "https://stacli.com/",
+    image: "/images/stacli.png",
+  },
+];
+
 const Work = () => {
   useGSAP(() => {
     let translateX: number = 0;
@@ -28,10 +55,11 @@ const Work = () => {
       scrollTrigger: {
         trigger: ".work-section",
         start: "top top",
-        end: `+=${translateX}`, // Use actual scroll width
+        end: `+=${translateX}`,
         scrub: true,
         pin: true,
         id: "work",
+        scroller: "#smooth-content",
       },
     });
 
@@ -40,12 +68,12 @@ const Work = () => {
       ease: "none",
     });
 
-    // Clean up (optional, good practice)
     return () => {
       timeline.kill();
       ScrollTrigger.getById("work")?.kill();
     };
   }, []);
+
   return (
     <div className="work-section" id="work">
       <div className="work-container section-container">
@@ -53,21 +81,20 @@ const Work = () => {
           My <span>Work</span>
         </h2>
         <div className="work-flex">
-          {[...Array(6)].map((_value, index) => (
-            <div className="work-box" key={index}>
+          {projects.map((project) => (
+            <div className="work-box" key={project.id}>
               <div className="work-info">
                 <div className="work-title">
-                  <h3>0{index + 1}</h3>
-
+                  <h3>{project.id}</h3>
                   <div>
-                    <h4>Project Name</h4>
-                    <p>Category</p>
+                    <h4>{project.name}</h4>
+                    <p>{project.category}</p>
                   </div>
                 </div>
                 <h4>Tools and features</h4>
-                <p>Javascript, TypeScript, React, Threejs</p>
+                <p>{project.tools}</p>
               </div>
-              <WorkImage image="/images/placeholder.webp" alt="" />
+              <WorkImage image={project.image} alt={project.name} link={project.link} />
             </div>
           ))}
         </div>

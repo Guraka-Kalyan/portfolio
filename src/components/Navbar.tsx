@@ -2,33 +2,43 @@ import { useEffect } from "react";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
 import HoverLinks from "./HoverLinks";
 import { gsap } from "gsap";
+import { ScrollSmoother } from "gsap/ScrollSmoother";
 import "./styles/Navbar.css";
 
-gsap.registerPlugin(ScrollTrigger);
+gsap.registerPlugin(ScrollSmoother, ScrollTrigger);
+export let smoother: ScrollSmoother;
 
 const Navbar = () => {
   useEffect(() => {
-    // Native smooth scroll for nav links (replaces ScrollSmoother.scrollTo)
-    const links = document.querySelectorAll(".header ul a");
+    smoother = ScrollSmoother.create({
+      wrapper: "#smooth-wrapper",
+      content: "#smooth-content",
+      smooth: 1.7,
+      speed: 1.7,
+      effects: true,
+      autoResize: true,
+      ignoreMobileResize: true,
+    });
+
+    smoother.scrollTop(0);
+    smoother.paused(true);
+
+    let links = document.querySelectorAll(".header ul a");
     links.forEach((elem) => {
-      const element = elem as HTMLAnchorElement;
+      let element = elem as HTMLAnchorElement;
       element.addEventListener("click", (e) => {
         if (window.innerWidth > 1024) {
           e.preventDefault();
-          const href = element.getAttribute("data-href");
-          if (href) {
-            const target = document.querySelector(href);
-            target?.scrollIntoView({ behavior: "smooth", block: "start" });
-          }
+          let elem = e.currentTarget as HTMLAnchorElement;
+          let section = elem.getAttribute("data-href");
+          smoother.scrollTo(section, true, "top top");
         }
       });
     });
-
     window.addEventListener("resize", () => {
-      ScrollTrigger.refresh(true);
+      ScrollSmoother.refresh(true);
     });
   }, []);
-
   return (
     <>
       <div className="header">
@@ -36,11 +46,11 @@ const Navbar = () => {
           Logo
         </a>
         <a
-          href="mailto:example@mail.com"
+          href="mailto:kalyangk777@gmail.com"
           className="navbar-connect"
           data-cursor="disable"
         >
-          example@mail.com
+          kalyangk777@gmail.com
         </a>
         <ul>
           <li>

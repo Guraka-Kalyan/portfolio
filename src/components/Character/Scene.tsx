@@ -32,7 +32,9 @@ const Scene = () => {
         antialias: true,
       });
       renderer.setSize(container.width, container.height);
-      renderer.setPixelRatio(window.devicePixelRatio);
+      // Cap pixel ratio to 2 — on 4K/Retina screens devicePixelRatio can be 3-4,
+      // causing 9-16x more GPU work than necessary
+      renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
       renderer.toneMapping = THREE.ACESFilmicToneMapping;
       renderer.toneMappingExposure = 1;
       canvasDiv.current.appendChild(renderer.domElement);
@@ -106,8 +108,18 @@ const Scene = () => {
         landingDiv.addEventListener("touchstart", onTouchStart);
         landingDiv.addEventListener("touchend", onTouchEnd);
       }
+
+      // Stop rendering when the character is not visible on screen
+      let isVisible = true;
+      const visibilityObserver = new IntersectionObserver(
+        ([entry]) => { isVisible = entry.isIntersecting; },
+        { threshold: 0 }
+      );
+      if (canvasDiv.current) visibilityObserver.observe(canvasDiv.current);
+
       const animate = () => {
         requestAnimationFrame(animate);
+        if (!isVisible) return; // Skip render when off-screen
         if (headBone) {
           handleHeadRotation(
             headBone,
@@ -128,6 +140,7 @@ const Scene = () => {
       animate();
       return () => {
         clearTimeout(debounce);
+        visibilityObserver.disconnect();
         scene.clear();
         renderer.dispose();
         window.removeEventListener("resize", () =>
